@@ -11,42 +11,6 @@ This repository serves as a portfolio and collection of foundational projects an
 
 ***
 
-## 🚀 Projects Overview
-
-The following projects are included in this repository:
-
-### 1. Calculator
-
-A basic arithmetic calculator application.
-
-| Feature Focus | Description |
-| :--- | :--- |
-| **DOM Manipulation** | Handling button clicks and updating the display. |
-| **Input Parsing** | Converting user input (strings) into mathematical expressions. |
-| **Logic Handling** | Implementing the core arithmetic operations (+, -, \*, /). |
-
-### 2. Python Compiler (JS)
-
-An implementation of a simple Python-like execution environment or interpreter logic, built using JavaScript.
-
-| Feature Focus | Description |
-| :--- | :--- |
-| **Lexical Analysis** | Breaking input code into tokens. |
-| **Parsing** | Structuring tokens into an abstract syntax tree (AST) or similar structure. |
-| **Execution Environment** | Running the processed code logic within a web browser context. |
-
-### 3. Tetris
-
-A playable implementation of the classic puzzle game, Tetris.
-
-| Feature Focus | Description |
-| :--- | :--- |
-| **Game Loop** | Managing the timing and sequence of game events. |
-| **Game Logic** | Implementing piece rotation, movement, and collision detection. |
-| **State Management** | Tracking the game grid, score, and current piece position. |
-
-***
-
 ## 💻 Technologies Used
 
 The projects in this repository primarily utilize web standards:
