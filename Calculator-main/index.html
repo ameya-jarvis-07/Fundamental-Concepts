@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material 3 Expressive Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Material 3 Expressive Color Tokens */
+            --md-primary: #6750A4;
+            --md-on-primary: #FFFFFF;
+            --md-primary-container: #EADDFF;
+            --md-on-primary-container: #21005D;
+            --md-secondary: #625B71;
+            --md-secondary-container: #E8DEF8;
+            --md-on-secondary-container: #1D192B;
+            --md-tertiary: #7D5260;
+            --md-tertiary-container: #FFD8E4;
+            --md-surface: #FEF7FF;
+            --md-surface-container: #F3EDF7;
+            --md-surface-container-high: #ECE6F0;
+            --md-on-surface: #1C1B1F;
+            --md-on-surface-variant: #49454F;
+            --md-outline: #79747E;
+            --md-outline-variant: #CAC4D0;
+            --md-error: #B3261E;
+            --md-on-error: #FFFFFF;
+            --md-inverse: #4A4458;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--md-primary-container) 0%, var(--md-secondary-container) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            background: var(--md-surface);
+            border-radius: 32px;
+            padding: 24px;
+            box-shadow: 
+                0 8px 32px rgba(103, 80, 164, 0.15),
+                0 2px 8px rgba(103, 80, 164, 0.1);
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .mode-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--md-on-surface-variant);
+            letter-spacing: 0.5px;
+        }
+
+        /* Material 3 Expressive Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 32px;
+            background: var(--md-surface-container-high);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 2px solid var(--md-outline-variant);
+        }
+
+        .toggle-switch.active {
+            background: var(--md-primary);
+            border-color: var(--md-primary);
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: var(--md-on-surface-variant);
+            border-radius: 50%;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active .toggle-knob {
+            left: 22px;
+            background: var(--md-on-primary);
+            transform: scale(1.1);
+        }
+
+        .mode-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--md-on-surface);
+            min-width: 70px;
+        }
+
+        .display-container {
+            background: var(--md-surface-container);
+            border-radius: 24px;
+            padding: 24px 20px;
+            margin-bottom: 20px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .display-expression {
+            font-size: 16px;
+            color: var(--md-on-surface-variant);
+            text-align: right;
+            min-height: 24px;
+            word-wrap: break-word;
+            margin-bottom: 8px;
+        }
+
+        .display-result {
+            font-size: 40px;
+            font-weight: 300;
+            color: var(--md-on-surface);
+            text-align: right;
+            word-wrap: break-word;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .display-result.calculating {
+            animation: pulse 0.6s cubic-bezier(0.4, 0, 0.6, 1);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .buttons-grid {
+            display: grid;
+            gap: 10px;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .buttons-grid.normal-mode {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .buttons-grid.complex-mode {
+            grid-template-columns: repeat(8, 1fr);
+        }
+
+        button {
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 16px 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            color: var(--md-on-surface);
+            background: var(--md-surface-container-high);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            min-height: 56px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(103, 80, 164, 0.2);
+        }
+
+        button:active {
+            transform: scale(0.98);
+            transition: all 0.1s cubic-bezier(0.4, 0, 1, 1);
+        }
+
+        /* Ripple Effect */
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(103, 80, 164, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:active::before {
+            width: 200px;
+            height: 200px;
+        }
+
+        .btn-number {
+            background: var(--md-surface-container-high);
+            color: var(--md-on-surface);
+            font-size: 18px;
+        }
+
+        .btn-operator {
+            background: var(--md-secondary-container);
+            color: var(--md-on-secondary-container);
+            font-weight: 600;
+        }
+
+        .btn-function {
+            background: var(--md-tertiary-container);
+            color: var(--md-tertiary);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-2nd {
+            background: var(--md-inverse);
+            color: var(--md-on-primary);
+            font-weight: 700;
+            position: relative;
+        }
+
+        .btn-2nd.active {
+            background: var(--md-primary);
+            animation: btnGlow 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes btnGlow {
+            0%, 100% { box-shadow: 0 2px 4px rgba(103, 80, 164, 0.2); }
+            50% { box-shadow: 0 8px 24px rgba(103, 80, 164, 0.6); }
+        }
+
+        .btn-equals {
+            background: var(--md-primary);
+            color: var(--md-on-primary);
+            grid-column: span 2;
+            font-size: 24px;
+            animation: breathe 3s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { box-shadow: 0 2px 4px rgba(103, 80, 164, 0.2); }
+            50% { box-shadow: 0 8px 24px rgba(103, 80, 164, 0.4); }
+        }
+
+        .btn-clear {
+            background: var(--md-error);
+            color: var(--md-on-error);
+        }
+
+        .btn-clear:hover {
+            box-shadow: 0 4px 12px rgba(179, 38, 30, 0.3);
+        }
+
+        .btn-memory {
+            background: var(--md-primary-container);
+            color: var(--md-on-primary-container);
+            font-weight: 600;
+        }
+
+        /* Hide/show buttons based on mode */
+        .complex-only {
+            display: none;
+            animation: fadeInScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .buttons-grid.complex-mode .complex-only {
+            display: block;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Function button label animation */
+        .btn-function-label {
+            display: block;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .btn-function-label.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            position: absolute;
+        }
+
+        .btn-function-label.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Error state */
+        .error {
+            color: var(--md-error) !important;
+            animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .calculator-container {
+                padding: 16px;
+                border-radius: 24px;
+                max-width: 100%;
+            }
+
+            button {
+                padding: 12px 4px;
+                font-size: 13px;
+                min-height: 48px;
+            }
+
+            .btn-number {
+                font-size: 16px;
+            }
+
+            .display-result {
+                font-size: 32px;
+            }
+
+            .buttons-grid {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="header">
+            <div class="mode-label">CALCULATOR</div>
+            <div class="toggle-container">
+                <span class="mode-text" id="modeText">Normal</span>
+                <div class="toggle-switch" id="modeToggle">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="display-container">
+            <div class="display-expression" id="expression"></div>
+            <div class="display-result" id="result">0</div>
+        </div>
+
+        <div class="buttons-grid normal-mode" id="buttonsGrid">
+            <!-- Row 1 - Advanced functions (Complex mode only) -->
+            <button class="btn-2nd complex-only" onclick="toggle2nd()" id="btn2nd">2nd</button>
+            <button class="btn-function complex-only" onclick="appendOperator('(')">(<span class="btn-function-label" data-primary="(" data-inverse=")" hidden></span></button>
+            <button class="btn-function complex-only" onclick="appendOperator(')')">)<span class="btn-function-label" data-primary=")" data-inverse="(" hidden></span></button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.pow(10,', 'xʸ')" data-primary="10ˣ" data-inverse="xʸ">
+                <span class="btn-function-label visible">10ˣ</span>
+                <span class="btn-function-label hidden">xʸ</span>
+            </button>
+            <button class="btn-memory complex-only" onclick="memoryClear()">mc</button>
+            <button class="btn-memory complex-only" onclick="memoryAdd()">m+</button>
+            <button class="btn-memory complex-only" onclick="memorySubtract()">m−</button>
+            <button class="btn-memory complex-only" onclick="memoryRecall()">mr</button>
+
+            <!-- Row 2 -->
+            <button class="btn-function complex-only" onclick="toggleFunction(this, '1/', 'Math.pow(', 2)" data-primary="1/x" data-inverse="x²">
+                <span class="btn-function-label visible">1/x</span>
+                <span class="btn-function-label hidden">x²</span>
+            </button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.pow(', 'Math.pow(', 3)" data-primary="x²" data-inverse="x³">
+                <span class="btn-function-label visible">x²</span>
+                <span class="btn-function-label hidden">x³</span>
+            </button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.pow(', 'Math.pow(')" data-primary="x³" data-inverse="xʸ">
+                <span class="btn-function-label visible">x³</span>
+                <span class="btn-function-label hidden">xʸ</span>
+            </button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.pow(', 'Math.pow(')" data-primary="xʸ" data-inverse="x^(1/y)">
+                <span class="btn-function-label visible">xʸ</span>
+                <span class="btn-function-label hidden">ʸ√x</span>
+            </button>
+            <button class="btn-clear" onclick="clearAll()">AC</button>
+            <button class="btn-operator" onclick="backspace()">⌫</button>
+            <button class="btn-operator" onclick="toggleSign()">+/−</button>
+            <button class="btn-operator" onclick="appendOperator('/')">÷</button>
+
+            <!-- Row 3 -->
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'factorial(', 'Math.sqrt(')" data-primary="x!" data-inverse="√x">
+                <span class="btn-function-label visible">x!</span>
+                <span class="btn-function-label hidden">√</span>
+            </button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.sqrt(', 'Math.cbrt(')" data-primary="√" data-inverse="∛">
+                <span class="btn-function-label visible">√</span>
+                <span class="btn-function-label hidden">∛</span>
+            </button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.cbrt(', 'Math.pow(')" data-primary="∛" data-inverse="ʸ√x">
+                <span class="btn-function-label visible">∛</span>
+                <span class="btn-function-label hidden">ʸ√x</span>
+            </button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.log10(', 'Math.log2(')" data-primary="lg" data-inverse="log₂">
+                <span class="btn-function-label visible">lg</span>
+                <span class="btn-function-label hidden">log₂</span>
+            </button>
+            <button class="btn-number" onclick="appendNumber('7')">7</button>
+            <button class="btn-number" onclick="appendNumber('8')">8</button>
+            <button class="btn-number" onclick="appendNumber('9')">9</button>
+            <button class="btn-operator" onclick="appendOperator('*')">×</button>
+
+            <!-- Row 4 -->
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.sin(', 'Math.asin(')" data-primary="sin" data-inverse="sin⁻¹">
+                <span class="btn-function-label visible">sin</span>
+                <span class="btn-function-label hidden">sin⁻¹</span>
+            </button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.cos(', 'Math.acos(')" data-primary="cos" data-inverse="cos⁻¹">
+                <span class="btn-function-label visible">cos</span>
+                <span class="btn-function-label hidden">cos⁻¹</span>
+            </button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.tan(', 'Math.atan(')" data-primary="tan" data-inverse="tan⁻¹">
+                <span class="btn-function-label visible">tan</span>
+                <span class="btn-function-label hidden">tan⁻¹</span>
+            </button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.log(', 'Math.pow(2,')" data-primary="ln" data-inverse="2ˣ">
+                <span class="btn-function-label visible">ln</span>
+                <span class="btn-function-label hidden">2ˣ</span>
+            </button>
+            <button class="btn-number" onclick="appendNumber('4')">4</button>
+            <button class="btn-number" onclick="appendNumber('5')">5</button>
+            <button class="btn-number" onclick="appendNumber('6')">6</button>
+            <button class="btn-operator" onclick="appendOperator('-')">−</button>
+
+            <!-- Row 5 -->
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.sinh(', 'Math.asinh(')" data-primary="sinh" data-inverse="sinh⁻¹">
+                <span class="btn-function-label visible">sinh</span>
+                <span class="btn-function-label hidden">sinh⁻¹</span>
+            </button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.cosh(', 'Math.acosh(')" data-primary="cosh" data-inverse="cosh⁻¹">
+                <span class="btn-function-label visible">cosh</span>
+                <span class="btn-function-label hidden">cosh⁻¹</span>
+            </button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.tanh(', 'Math.atanh(')" data-primary="tanh" data-inverse="tanh⁻¹">
+                <span class="btn-function-label visible">tanh</span>
+                <span class="btn-function-label hidden">tanh⁻¹</span>
+            </button>
+            <button class="btn-function complex-only" onclick="toggleFunction(this, 'Math.exp(', 'Math.pow(Math.E,')" data-primary="eˣ" data-inverse="Eˣ">
+                <span class="btn-function-label visible">eˣ</span>
+                <span class="btn-function-label hidden">10ˣ</span>
+            </button>
+            <button class="btn-number" onclick="appendNumber('1')">1</button>
+            <button class="btn-number" onclick="appendNumber('2')">2</button>
+            <button class="btn-number" onclick="appendNumber('3')">3</button>
+            <button class="btn-operator" onclick="appendOperator('+')">+</button>
+
+            <!-- Row 6 -->
+            <button class="btn-function complex-only" onclick="toggleDegRad()" id="btnDegRad">Deg</button>
+            <button class="btn-function complex-only" onclick="appendConstant('Math.PI')">π</button>
+            <button class="btn-function complex-only" onclick="appendConstant('Math.E')">e</button>
+            <button class="btn-function complex-only" onclick="appendRandom()">Rand</button>
+            <button class="btn-operator" onclick="appendOperator('%')">%</button>
+            <button class="btn-number" onclick="appendNumber('0')">0</button>
+            <button class="btn-number" onclick="appendNumber('.')">.</button>
+            <button class="btn-equals" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let currentExpression = '';
+        let currentResult = '0';
+        let isComplexMode = false;
+        let is2ndMode = false;
+        let isDegree = true;
+        let memory = 0;
+
+        const modeToggle = document.getElementById('modeToggle');
+        const modeText = document.getElementById('modeText');
+        const buttonsGrid = document.getElementById('buttonsGrid');
+        const expressionDisplay = document.getElementById('expression');
+        const resultDisplay = document.getElementById('result');
+        const btn2nd = document.getElementById('btn2nd');
+        const btnDegRad = document.getElementById('btnDegRad');
+
+        // Toggle between normal and complex mode
+        modeToggle.addEventListener('click', () => {
+            isComplexMode = !isComplexMode;
+            modeToggle.classList.toggle('active');
+            
+            if (isComplexMode) {
+                modeText.textContent = 'Complex';
+                buttonsGrid.classList.remove('normal-mode');
+                buttonsGrid.classList.add('complex-mode');
+            } else {
+                modeText.textContent = 'Normal';
+                buttonsGrid.classList.remove('complex-mode');
+                buttonsGrid.classList.add('normal-mode');
+            }
+        });
+
+        // Toggle 2nd mode for inverse functions
+        function toggle2nd() {
+        is2ndMode = !is2ndMode;
+        btn2nd.classList.toggle('active');
+    
+        // Update button text
+        btn2nd.textContent = is2ndMode ? '1st' : '2nd';
+    
+        // Toggle all function button labels
+        const functionButtons = document.querySelectorAll('.btn-function[data-primary]');
+        functionButtons.forEach(btn => {
+            const labels = btn.querySelectorAll('.btn-function-label');
+            labels.forEach(label => {
+                label.classList.toggle('visible');
+                label.classList.toggle('hidden');
+            });
+        });
+        }
+
+        // Toggle degree/radian mode
+        function toggleDegRad() {
+            isDegree = !isDegree;
+            btnDegRad.textContent = isDegree ? 'Deg' : 'Rad';
+            btnDegRad.style.background = isDegree ? 'var(--md-tertiary-container)' : 'var(--md-primary)';
+            btnDegRad.style.color = isDegree ? 'var(--md-tertiary)' : 'var(--md-on-primary)';
+        }
+
+        // Convert angle to radians if in degree mode
+        function toRadians(angle) {
+            return isDegree ? angle * Math.PI / 180 : angle;
+        }
+
+        // Convert angle from radians if in degree mode
+        function fromRadians(angle) {
+            return isDegree ? angle * 180 / Math.PI : angle;
+        }
+
+        // Memory functions
+        function memoryClear() {
+            memory = 0;
+            showFeedback('Memory Cleared');
+        }
+
+        function memoryAdd() {
+            const value = parseFloat(currentResult);
+            if (!isNaN(value)) {
+                memory += value;
+                showFeedback('Added to Memory');
+            }
+        }
+
+        function memorySubtract() {
+            const value = parseFloat(currentResult);
+            if (!isNaN(value)) {
+                memory -= value;
+                showFeedback('Subtracted from Memory');
+            }
+        }
+
+        function memoryRecall() {
+            currentExpression = memory.toString();
+            currentResult = memory.toString();
+            updateDisplay();
+            showFeedback('Memory Recalled');
+        }
+
+        function showFeedback(message) {
+            const prevExpression = expressionDisplay.textContent;
+            expressionDisplay.textContent = message;
+            setTimeout(() => {
+                expressionDisplay.textContent = prevExpression;
+            }, 1000);
+        }
+
+        function appendNumber(num) {
+            if (currentExpression === '0' || currentExpression === '' || currentResult === 'Error') {
+                currentExpression = num;
+            } else {
+                currentExpression += num;
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            const lastChar = currentExpression.slice(-1);
+            // Prevent multiple operators in a row
+            if (['+', '-', '*', '/', '%'].includes(lastChar) && ['+', '-', '*', '/', '%'].includes(op)) {
+                currentExpression = currentExpression.slice(0, -1) + op;
+            } else {
+                currentExpression += op;
+            }
+            updateDisplay();
+        }
+
+        function toggleFunction(button, primaryFunc, inverseFunc, fixedParam) {
+            const useInverse = is2ndMode;
+            const func = useInverse ? inverseFunc : primaryFunc;
+            
+            if (fixedParam !== undefined) {
+                currentExpression += func + currentResult + ',' + fixedParam + ')';
+            } else {
+                currentExpression += func;
+            }
+            updateDisplay();
+        }
+
+        function appendConstant(constant) {
+            currentExpression += constant;
+            updateDisplay();
+        }
+
+        function appendRandom() {
+            currentExpression += 'Math.random()';
+            updateDisplay();
+        }
+
+        function toggleSign() {
+            if (currentExpression && currentExpression !== '0') {
+                if (currentExpression.startsWith('-')) {
+                    currentExpression = currentExpression.substring(1);
+                } else {
+                    currentExpression = '-' + currentExpression;
+                }
+                updateDisplay();
+            }
+        }
+
+        function backspace() {
+            currentExpression = currentExpression.slice(0, -1);
+            if (currentExpression === '') {
+                currentExpression = '0';
+            }
+            updateDisplay();
+        }
+
+        function clearAll() {
+            currentExpression = '';
+            currentResult = '0';
+            updateDisplay();
+            
+            // Trigger clear animation
+            resultDisplay.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                resultDisplay.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function factorial(n) {
+            if (n < 0) return NaN;
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        function calculate() {
+            try {
+                // Add calculating animation
+                resultDisplay.classList.add('calculating');
+                
+                // Convert display operators to JavaScript operators
+                let expression = currentExpression
+                    .replace(/×/g, '*')
+                    .replace(/÷/g, '/')
+                    .replace(/−/g, '-')
+                    .replace(/factorial\(/g, 'factorial(')
+                    // Handle trig functions with degree conversion
+                    .replace(/Math\.sin\(/g, isDegree ? 'Math.sin(toRadians(' : 'Math.sin(')
+                    .replace(/Math\.cos\(/g, isDegree ? 'Math.cos(toRadians(' : 'Math.cos(')
+                    .replace(/Math\.tan\(/g, isDegree ? 'Math.tan(toRadians(' : 'Math.tan(')
+                    .replace(/Math\.asin\(/g, isDegree ? 'fromRadians(Math.asin(' : 'Math.asin(')
+                    .replace(/Math\.acos\(/g, isDegree ? 'fromRadians(Math.acos(' : 'Math.acos(')
+                    .replace(/Math\.atan\(/g, isDegree ? 'fromRadians(Math.atan(' : 'Math.atan(');
+
+                // Count opening parentheses for trig functions if degree mode
+                if (isDegree) {
+                    const sinCount = (expression.match(/Math\.sin\(toRadians\(/g) || []).length;
+                    const cosCount = (expression.match(/Math\.cos\(toRadians\(/g) || []).length;
+                    const tanCount = (expression.match(/Math\.tan\(toRadians\(/g) || []).length;
+                    const asinCount = (expression.match(/fromRadians\(Math\.asin\(/g) || []).length;
+                    const acosCount = (expression.match(/fromRadians\(Math\.acos\(/g) || []).length;
+                    const atanCount = (expression.match(/fromRadians\(Math\.atan\(/g) || []).length;
+                    
+                    // Add extra closing parentheses
+                    const extraParens = sinCount + cosCount + tanCount + asinCount + acosCount + atanCount;
+                    expression += ')'.repeat(extraParens);
+                }
+
+                // Evaluate the expression
+                const result = eval(expression);
+                
+                // Format the result
+                if (isNaN(result) || !isFinite(result)) {
+                    currentResult = 'Error';
+                    resultDisplay.classList.add('error');
+                } else {
+                    currentResult = parseFloat(result.toFixed(10)).toString();
+                    resultDisplay.classList.remove('error');
+                }
+                
+                currentExpression = currentResult;
+                
+                setTimeout(() => {
+                    resultDisplay.classList.remove('calculating');
+                }, 300);
+                
+            } catch (error) {
+                currentResult = 'Error';
+                resultDisplay.classList.add('error');
+                
+                setTimeout(() => {
+                    resultDisplay.classList.remove('error');
+                }, 500);
+            }
+            
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            // Update expression display
+            const displayExpression = currentExpression
+                .replace(/\*/g, '×')
+                .replace(/\//g, '÷')
+                .replace(/Math\.PI/g, 'π')
+                .replace(/Math\.E/g, 'e')
+                .replace(/Math\.sin\(/g, 'sin(')
+                .replace(/Math\.cos\(/g, 'cos(')
+                .replace(/Math\.tan\(/g, 'tan(')
+                .replace(/Math\.asin\(/g, 'sin⁻¹(')
+                .replace(/Math\.acos\(/g, 'cos⁻¹(')
+                .replace(/Math\.atan\(/g, 'tan⁻¹(')
+                .replace(/Math\.sinh\(/g, 'sinh(')
+                .replace(/Math\.cosh\(/g, 'cosh(')
+                .replace(/Math\.tanh\(/g, 'tanh(')
+                .replace(/Math\.asinh\(/g, 'sinh⁻¹(')
+                .replace(/Math\.acosh\(/g, 'cosh⁻¹(')
+                .replace(/Math\.atanh\(/g, 'tanh⁻¹(')
+                .replace(/Math\.sqrt\(/g, '√(')
+                .replace(/Math\.cbrt\(/g, '∛(')
+                .replace(/Math\.log10\(/g, 'lg(')
+                .replace(/Math\.log2\(/g, 'log₂(')
+                .replace(/Math\.log\(/g, 'ln(')
+                .replace(/Math\.exp\(/g, 'eˣ(')
+                .replace(/Math\.pow\(/g, 'pow(')
+                .replace(/Math\.random\(\)/g, 'rand')
+                .replace(/factorial\(/g, '!(')
+                .replace(/toRadians\(/g, '')
+                .replace(/fromRadians\(/g, '');
+            
+            expressionDisplay.textContent = displayExpression || '';
+            resultDisplay.textContent = currentResult;
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') {
+                appendNumber(e.key);
+            } else if (e.key === '.') {
+                appendNumber('.');
+            } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+                appendOperator(e.key);
+            } else if (e.key === 'Enter' || e.key === '=') {
+                e.preventDefault();
+                calculate();
+            } else if (e.key === 'Backspace') {
+                e.preventDefault();
+                backspace();
+            } else if (e.key === 'Escape') {
+                clearAll();
+            } else if (e.key === '(' || e.key === ')') {
+                appendOperator(e.key);
+            }
+        });
+
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>

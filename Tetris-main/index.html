@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Material Tetris - Expressive Design</title>
+<style>
+  :root {
+    /* Material 3 Expressive Light Theme Colors */
+    --md-primary: #6750A4;
+    --md-on-primary: #FFFFFF;
+    --md-primary-container: #EADDFF;
+    --md-on-primary-container: #21005D;
+    --md-secondary: #625B71;
+    --md-secondary-container: #E8DEF8;
+    --md-on-secondary-container: #1D192B;
+    --md-tertiary: #7D5260;
+    --md-tertiary-container: #FFD8E4;
+    --md-on-tertiary-container: #31111D;
+    --md-surface: #FEF7FF;
+    --md-surface-container: #F3EDF7;
+    --md-surface-container-high: #ECE6F0;
+    --md-surface-container-highest: #E6E0E9;
+    --md-on-surface: #1C1B1F;
+    --md-on-surface-variant: #49454F;
+    --md-outline: #79747E;
+    --md-outline-variant: #CAC4D0;
+    --md-error: #B3261E;
+    --md-shadow: rgba(103, 80, 164, 0.15);
+  }
+
+  [data-theme="dark"] {
+    /* Material 3 Expressive Dark Theme Colors */
+    --md-primary: #D0BCFF;
+    --md-on-primary: #381E72;
+    --md-primary-container: #4F378B;
+    --md-on-primary-container: #EADDFF;
+    --md-secondary: #CCC2DC;
+    --md-secondary-container: #4A4458;
+    --md-on-secondary-container: #E8DEF8;
+    --md-tertiary: #EFB8C8;
+    --md-tertiary-container: #633B48;
+    --md-on-tertiary-container: #FFD8E4;
+    --md-surface: #1C1B1F;
+    --md-surface-container: #211F26;
+    --md-surface-container-high: #2B2930;
+    --md-surface-container-highest: #36343B;
+    --md-on-surface: #E6E1E5;
+    --md-on-surface-variant: #CAC4D0;
+    --md-outline: #938F99;
+    --md-outline-variant: #49454F;
+    --md-error: #F2B8B5;
+    --md-shadow: rgba(0, 0, 0, 0.3);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, var(--md-primary-container) 0%, var(--md-secondary-container) 50%, var(--md-tertiary-container) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #main-container {
+    background: var(--md-surface);
+    border-radius: 32px;
+    padding: 32px;
+    box-shadow: 0 8px 32px var(--md-shadow), 0 2px 8px var(--md-shadow);
+    animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 600px;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .title {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--md-primary);
+    letter-spacing: 0.5px;
+  }
+
+  .theme-toggle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--md-primary-container);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 2px 4px var(--md-shadow);
+  }
+
+  .theme-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 0 4px 12px var(--md-shadow);
+  }
+
+  .theme-toggle:active {
+    transform: scale(0.95);
+  }
+
+  #container {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .game-area {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  canvas {
+    background: var(--md-surface-container);
+    border-radius: 24px;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1), 0 4px 16px var(--md-shadow);
+    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #side {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 200px;
+  }
+
+  .stat-card {
+    background: var(--md-surface-container-high);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 2px 8px var(--md-shadow);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px var(--md-shadow);
+  }
+
+  .stat-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--md-on-surface-variant);
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--md-primary);
+    animation: scoreUpdate 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes scoreUpdate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  .next-preview {
+    background: var(--md-surface-container-high);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 2px 8px var(--md-shadow);
+  }
+
+  .next-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--md-on-surface-variant);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  #next {
+    border-radius: 16px;
+    background: var(--md-surface-container);
+    display: block;
+    margin: 0 auto;
+  }
+
+  button {
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+    border: none;
+    border-radius: 20px;
+    padding: 16px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 2px 8px var(--md-shadow);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+  }
+
+  button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  button:active::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px var(--md-shadow);
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
+
+  #start {
+    width: 100%;
+    animation: breathe 3s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { box-shadow: 0 2px 8px var(--md-shadow); }
+    50% { box-shadow: 0 8px 24px var(--md-shadow); }
+  }
+
+  #touch-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    background: var(--md-surface-container-high);
+    padding: 16px;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px var(--md-shadow);
+  }
+
+  #touch-controls button {
+    font-size: 24px;
+    padding: 16px 20px;
+    background: var(--md-secondary-container);
+    color: var(--md-on-secondary-container);
+    border-radius: 16px;
+    min-width: 60px;
+    box-shadow: 0 2px 4px var(--md-shadow);
+  }
+
+  #touch-controls button:hover {
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+  }
+
+  .controls-info {
+    background: var(--md-tertiary-container);
+    color: var(--md-on-tertiary-container);
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 16px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .controls-info strong {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--md-tertiary);
+  }
+
+  .game-over-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .game-over-card {
+    background: var(--md-surface);
+    border-radius: 32px;
+    padding: 48px;
+    text-align: center;
+    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 16px 64px var(--md-shadow);
+  }
+
+  @keyframes popIn {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .game-over-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--md-error);
+    margin-bottom: 16px;
+  }
+
+  .game-over-score {
+    font-size: 24px;
+    color: var(--md-on-surface);
+    margin-bottom: 32px;
+  }
+
+  @media (max-width: 768px) {
+    #container {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #main-container {
+      padding: 20px;
+    }
+
+    .title {
+      font-size: 24px;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="main-container">
+  <div class="header">
+    <div class="title">🎮 Material Tetris</div>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" aria-label="Toggle theme">
+      <span id="themeIcon">☀️</span>
+    </button>
+  </div>
+
+  <div id="container">
+    <div class="game-area">
+      <canvas id="game" width="200" height="400"></canvas>
+    </div>
+
+    <div id="side">
+      <div class="stat-card">
+        <div class="stat-label">Score</div>
+        <div class="stat-value" id="score">0</div>
+      </div>
+
+      <div class="next-preview">
+        <div class="next-label">Next Piece</div>
+        <canvas id="next" width="80" height="80"></canvas>
+      </div>
+
+      <button id="start">Start Game</button>
+
+      <div class="controls-info">
+        <strong>⌨️ Controls</strong>
+        ← → Move<br>
+        ↓ Drop<br>
+        ↑ Rotate
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="game-over-overlay" id="gameOverlay">
+  <div class="game-over-card">
+    <div class="game-over-title">Game Over</div>
+    <div class="game-over-score">Final Score: <span id="finalScore">0</span></div>
+    <button onclick="start()">Play Again</button>
+  </div>
+</div>
+
+<div id="touch-controls">
+  <button onclick="moveLeft()">←</button>
+  <button onclick="moveRight()">→</button>
+  <button onclick="drop()">↓</button>
+  <button onclick="rotatePiece()">⟳</button>
+</div>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const nextCanvas = document.getElementById('next');
+const nctx = nextCanvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+const finalScoreEl = document.getElementById('finalScore');
+const startBtn = document.getElementById('start');
+const gameOverlay = document.getElementById('gameOverlay');
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+
+const rows = 20, cols = 10, cellSize = 20;
+
+// Material 3 Expressive vibrant colors for Tetris pieces
+const COLORS = {
+  I: '#00BCD4', // Cyan
+  J: '#3F51B5', // Blue
+  L: '#FF9800', // Orange
+  O: '#FFEB3B', // Yellow
+  S: '#4CAF50', // Green
+  T: '#9C27B0', // Purple
+  Z: '#F44336'  // Red
+};
+
+const SHAPES = {
+  I: [[1,1,1,1]],
+  J: [[1,0,0],[1,1,1]],
+  L: [[0,0,1],[1,1,1]],
+  O: [[1,1],[1,1]],
+  S: [[0,1,1],[1,1,0]],
+  T: [[0,1,0],[1,1,1]],
+  Z: [[1,1,0],[0,1,1]]
+};
+
+let board, current, nextPiece, score, gameOver, dropCounter, dropInterval, lastTime, raf;
+let isDarkMode = false;
+
+// Theme management
+function loadTheme() {
+  const savedTheme = localStorage.getItem('tetris-theme');
+  if (savedTheme === 'dark') {
+    isDarkMode = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeIcon.textContent = '🌙';
+  } else {
+    isDarkMode = false;
+    document.documentElement.removeAttribute('data-theme');
+    themeIcon.textContent = '☀️';
+  }
+}
+
+function toggleTheme() {
+  isDarkMode = !isDarkMode;
+  if (isDarkMode) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeIcon.textContent = '🌙';
+    localStorage.setItem('tetris-theme', 'dark');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    themeIcon.textContent = '☀️';
+    localStorage.setItem('tetris-theme', 'light');
+  }
+}
+
+function resetBoard() {
+  return Array.from({length: rows}, () => Array(cols).fill(0));
+}
+
+function randomPiece() {
+  const types = Object.keys(SHAPES);
+  const type = types[Math.floor(Math.random() * types.length)];
+  return {
+    shape: SHAPES[type],
+    type,
+    x: Math.floor(cols / 2) - Math.ceil(SHAPES[type][0].length / 2),
+    y: -1
+  };
+}
+
+function rotate(matrix) {
+  const rows = matrix.length, cols = matrix[0].length;
+  const res = Array.from({length: cols}, () => Array(rows).fill(0));
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      res[c][rows - 1 - r] = matrix[r][c];
+    }
+  }
+  return res;
+}
+
+function collide(p) {
+  for (let r = 0; r < p.shape.length; r++) {
+    for (let c = 0; c < p.shape[r].length; c++) {
+      if (p.shape[r][c]) {
+        const X = p.x + c, Y = p.y + r;
+        if (X < 0 || X >= cols || Y >= rows) return true;
+        if (Y >= 0 && board[Y][X]) return true;
+      }
+    }
+  }
+  return false;
+}
+
+function merge(p) {
+  for (let r = 0; r < p.shape.length; r++) {
+    for (let c = 0; c < p.shape[r].length; c++) {
+      if (p.shape[r][c]) {
+        const Y = p.y + r, X = p.x + c;
+        if (Y >= 0) board[Y][X] = p.type;
+      }
+    }
+  }
+}
+
+function clearLines() {
+  let lines = 0;
+  outer: for (let y = rows - 1; y >= 0; y--) {
+    for (let x = 0; x < cols; x++) {
+      if (!board[y][x]) continue outer;
+    }
+    board.splice(y, 1);
+    board.unshift(Array(cols).fill(0));
+    lines++;
+    y++;
+  }
+  if (lines > 0) {
+    score += lines * 100;
+    scoreEl.style.animation = 'none';
+    setTimeout(() => scoreEl.style.animation = 'scoreUpdate 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)', 10);
+  }
+}
+
+function drawCell(x, y, type, ctxObj, size) {
+  if (type && COLORS[type]) {
+    // Material 3 Expressive: Vibrant colored cells with gradient
+    const gradient = ctxObj.createLinearGradient(x * size, y * size, (x + 1) * size, (y + 1) * size);
+    gradient.addColorStop(0, COLORS[type]);
+    gradient.addColorStop(1, shadeColor(COLORS[type], -20));
+    ctxObj.fillStyle = gradient;
+    
+    // Rounded corners for expressive feel
+    roundRect(ctxObj, x * size + 1, y * size + 1, size - 2, size - 2, 4);
+    
+    // Subtle highlight for depth
+    ctxObj.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    roundRect(ctxObj, x * size + 2, y * size + 2, size - 4, size / 2, 2);
+  } else {
+    // Empty cell with subtle grid
+    ctxObj.fillStyle = isDarkMode ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.02)';
+    ctxObj.fillRect(x * size, y * size, size, size);
+    
+    ctxObj.strokeStyle = isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+    ctxObj.lineWidth = 0.5;
+    ctxObj.strokeRect(x * size, y * size, size, size);
+  }
+}
+
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function shadeColor(color, percent) {
+  const num = parseInt(color.replace("#", ""), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = (num >> 16) + amt;
+  const G = (num >> 8 & 0x00FF) + amt;
+  const B = (num & 0x0000FF) + amt;
+  return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+    (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+    (B < 255 ? B < 1 ? 0 : B : 255))
+    .toString(16).slice(1);
+}
+
+function drawBoard() {
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      drawCell(c, r, board[r][c], ctx, cellSize);
+    }
+  }
+}
+
+function drawPiece(p, ctxObj, size) {
+  for (let r = 0; r < p.shape.length; r++) {
+    for (let c = 0; c < p.shape[r].length; c++) {
+      if (p.shape[r][c]) {
+        drawCell(p.x + c, p.y + r, p.type, ctxObj, size);
+      }
+    }
+  }
+}
+
+function drawNext() {
+  if (!nextPiece) return;
+  nctx.fillStyle = isDarkMode ? '#211F26' : '#F3EDF7';
+  nctx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+  
+  const offsetX = Math.floor((4 - nextPiece.shape[0].length) / 2);
+  const offsetY = Math.floor((4 - nextPiece.shape.length) / 2);
+  
+  for (let r = 0; r < nextPiece.shape.length; r++) {
+    for (let c = 0; c < nextPiece.shape[r].length; c++) {
+      if (nextPiece.shape[r][c]) {
+        drawCell(c + offsetX, r + offsetY, nextPiece.type, nctx, 20);
+      }
+    }
+  }
+}
+
+function spawn() {
+  current = nextPiece || randomPiece();
+  nextPiece = randomPiece();
+  if (collide(current)) {
+    gameOver = true;
+    gameOverlay.style.display = 'flex';
+    finalScoreEl.textContent = score;
+  }
+}
+
+function dropPiece() {
+  current.y++;
+  if (collide(current)) {
+    current.y--;
+    merge(current);
+    clearLines();
+    spawn();
+  }
+  dropCounter = 0;
+}
+
+function update(time = 0) {
+  if (gameOver) return;
+  
+  const delta = time - lastTime;
+  lastTime = time;
+  dropCounter += delta;
+  
+  if (dropCounter > dropInterval) dropPiece();
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawBoard();
+  drawPiece(current, ctx, cellSize);
+  drawNext();
+  scoreEl.textContent = score;
+  
+  raf = requestAnimationFrame(update);
+}
+
+function start() {
+  board = resetBoard();
+  score = 0;
+  gameOver = false;
+  dropCounter = 0;
+  dropInterval = 500;
+  lastTime = 0;
+  current = randomPiece();
+  nextPiece = randomPiece();
+  gameOverlay.style.display = 'none';
+  
+  if (raf) cancelAnimationFrame(raf);
+  update();
+}
+
+// Control functions
+function moveLeft() {
+  if (gameOver) return;
+  current.x--;
+  if (collide(current)) current.x++;
+}
+
+function moveRight() {
+  if (gameOver) return;
+  current.x++;
+  if (collide(current)) current.x--;
+}
+
+function drop() {
+  if (gameOver) return;
+  dropPiece();
+}
+
+function rotatePiece() {
+  if (gameOver) return;
+  const rotated = rotate(current.shape);
+  const prev = current.shape;
+  current.shape = rotated;
+  if (collide(current)) current.shape = prev;
+}
+
+// Keyboard controls
+document.addEventListener('keydown', e => {
+  if (gameOver) return;
+  if (e.key === 'ArrowLeft') moveLeft();
+  else if (e.key === 'ArrowRight') moveRight();
+  else if (e.key === 'ArrowDown') drop();
+  else if (e.key === 'ArrowUp') rotatePiece();
+});
+
+startBtn.onclick = start;
+
+// Initialize
+loadTheme();
+</script>
+</body>
+</html>
