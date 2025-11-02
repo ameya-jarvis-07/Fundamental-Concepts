@@ -5,7 +5,7 @@ This repository serves as a portfolio and collection of foundational projects an
 ## 📋 Table of Contents
 
 * [Projects Overview]
-    * [1. Calculator](#1-calculator)
+    * [1. Calculator](Calculator-main)
     * [2. Python Compiler (JS)](#2-python-compiler-js)
     * [3. Tetris](#3-tetris)
     * [4. Budget App](#4-budget-app)
