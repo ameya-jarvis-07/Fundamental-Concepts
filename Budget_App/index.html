@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker - Liquid Glass</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Theme Toggle Switch -->
+    <div class="theme-toggle-container">
+        <label class="theme-toggle">
+            <input type="checkbox" id="theme-switch">
+            <span class="toggle-slider">
+                <i class="fas fa-sun icon-light"></i>
+                <i class="fas fa-moon icon-dark"></i>
+            </span>
+        </label>
+    </div>
+
+    <div class="wrapper">
+        <div class="container">
+            <h1 class="app-title">Budget Tracker</h1>
+            
+            <div class="sub-container">
+                <!-- Budget Section -->
+                <div class="total-amount-container glass-card">
+                    <h3>Budget</h3>
+                    <input type="number" id="total-amount" placeholder="Enter Total Amount">
+                    <button class="submit liquid-glass-btn" id="total-amount-button">
+                        <span>Set Budget</span>
+                        <div class="shimmer"></div>
+                    </button>
+                    <p id="budget-error" class="hide error">Value cannot be empty or negative</p>
+                </div>
+
+                <!-- Expenses Section -->
+                <div class="user-amount-container glass-card">
+                    <h3>Expenses</h3>
+                    <input type="text" class="product-title" id="product-title" placeholder="Enter Title of Product">
+                    <input type="number" id="user-amount" placeholder="Enter Cost of Product">
+                    <button class="submit liquid-glass-btn" id="check-amount">
+                        <span>Check Amount</span>
+                        <div class="shimmer"></div>
+                    </button>
+                    <p id="product-title-error" class="hide error">Values cannot be empty</p>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div class="output-container glass-card">
+                <div>
+                    <p>Total Budget</p>
+                    <span id="amount">0</span>
+                </div>
+                <div>
+                    <p>Expenses</p>
+                    <span id="expenditure-value">0</span>
+                </div>
+                <div>
+                    <p>Balance</p>
+                    <span id="balance-amount">0</span>
+                </div>
+            </div>
+
+            <!-- List Section -->
+            <div class="list glass-card">
+                <h3>Expense List</h3>
+                <div class="list-container" id="list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
