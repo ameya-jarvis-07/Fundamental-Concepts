@@ -6,9 +6,9 @@ This repository serves as a portfolio and collection of foundational projects an
 
 * [Projects Overview]
     * [1. Calculator](Calculator-main)
-    * [2. Python Compiler (JS)](#2-python-compiler-js)
-    * [3. Tetris](#3-tetris)
-    * [4. Budget App](#4-budget-app)
+    * [2. Python Compiler (JS)](Python_Compiler_JS-main)
+    * [3. Tetris](Tetris-main)
+    * [4. Budget App](Budget_App)
 
 ***
 
@@ -39,4 +39,5 @@ To run any of these projects locally, follow these simple steps:
     Simply open the `index.html` file (or the primary HTML file in the directory) in your web browser.
 
 ***
+
 
