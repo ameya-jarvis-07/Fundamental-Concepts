@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fundamental Concepts Portfolio</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #dbe6e4 0%, #b7c8e3 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 0;
+    }
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 35px;
+      color: #222;
+      letter-spacing: 2px;
+      font-weight: 700;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .card-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: center;
+    }
+    .glass-card {
+      flex: 1 1 260px;
+      min-width: 260px;
+      max-width: 340px;
+      background: rgba(255,255,255,0.15);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.34);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 26px 22px;
+      color: #222;
+      transition: transform 0.18s;
+      text-align: center;
+    }
+    .glass-card:hover {
+      transform: translateY(-5px) scale(1.05);
+    }
+    .project-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .project-desc {
+      font-size: 1rem;
+      margin-bottom: 18px;
+      color: #444;
+    }
+    .open-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #2952be;
+      color: #fff;
+      border-radius: 13px;
+      text-decoration: none;
+      font-size: 0.98rem;
+      font-weight: 600;
+      box-shadow: 0 1px 8px rgba(41,82,190,0.18);
+      transition: background 0.2s;
+    }
+    .open-btn:hover {
+      background: #183487;
+    }
+    @media (max-width: 650px) {
+      .card-grid {
+        flex-direction: column;
+        gap: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💡 Fundamental Concepts Portfolio</h1>
+    <div class="card-grid">
+      <div class="glass-card">
+        <div class="project-title">Calculator</div>
+        <div class="project-desc">Simple calculator web app with standard and extended operations. Built using HTML, CSS, and JavaScript.</div>
+        <a href="./Calculator-main/index.html" class="open-btn" target="_blank">Open Project</a>
+      </div>
+      <div class="glass-card">
+        <div class="project-title">Python Compiler (JS)</div>
+        <div class="project-desc">Python code editor and compiler running in the browser using JavaScript. Practice Python concepts interactively!</div>
+        <a href="./Python_Compiler_JS-main/index.html" class="open-btn" target="_blank">Open Project</a>
+      </div>
+      <div class="glass-card">
+        <div class="project-title">Tetris</div>
+        <div class="project-desc">Classic Tetris game recreated in the browser. Enjoy responsive controls and smooth animation.</div>
+        <a href="./Tetris-main/index.html" class="open-btn" target="_blank">Open Project</a>
+      </div>
+      <div class="glass-card">
+        <div class="project-title">Budget App</div>
+        <div class="project-desc">Manage your budget with this intuitive app, track expenses and savings with a smart UI.</div>
+        <a href="./BudgetApp-main/index.html" class="open-btn" target="_blank">Open Project</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
