@@ -9,6 +9,7 @@ This repository serves as a portfolio and collection of foundational projects an
     * [2. Python Compiler (JS)](Python_Compiler_JS-main)
     * [3. Tetris](Tetris-main)
     * [4. Budget App](Budget_App)
+    * [5. WIfi QR Code](QR-Java)
 
 ***
 
