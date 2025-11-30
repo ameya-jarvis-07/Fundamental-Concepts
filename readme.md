@@ -10,7 +10,7 @@ This repository serves as a portfolio and collection of foundational projects an
     * [3. Tetris](Tetris-main)
     * [4. Budget App](Budget_App)
     * [5. WIfi QR Code](QR-Java)
-    * [6. Solar Explorer](solar)
+
 
 ***
 
