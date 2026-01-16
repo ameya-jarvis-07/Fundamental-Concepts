@@ -27,6 +27,19 @@
             </div>
 
             <div class="control-group">
+                <label for="language">Language:</label>
+                <select id="language">
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="c">C</option>
+                    <option value="cpp">C++</option>
+                    <option value="csharp">C#</option>
+                    <option value="go">Go</option>
+                </select>
+            </div>
+
+            <div class="control-group">
                 <label for="arraySize">Array Size: <span id="arraySizeValue">50</span></label>
                 <input type="range" id="arraySize" min="10" max="100" value="50">
             </div>
@@ -39,6 +52,8 @@
             <div class="button-group">
                 <button id="startSort" class="btn btn-primary">Start Sorting</button>
                 <button id="stopSort" class="btn btn-danger" disabled>Stop</button>
+                <button id="scramble" class="btn btn-secondary">🔀 Scramble</button>
+                <button id="showCode" class="btn btn-secondary">📝 Show Code</button>
                 <button id="toggleSound" class="btn btn-secondary">🔊 Sound On</button>
             </div>
         </div>
@@ -76,6 +91,21 @@
             <div class="legend-item">
                 <div class="legend-color sorted"></div>
                 <span>Sorted</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <!-- Code Modal -->
+    <div id="codeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Bubble Sort - JavaScript</h2>
+                <button id="closeModal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <pre><code id="codeDisplay"></code></pre>
             </div>
         </div>
     </div>
